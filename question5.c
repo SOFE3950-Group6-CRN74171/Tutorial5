@@ -30,9 +30,9 @@ void *read_grades() {
 }
 
 void *save_bellcurve(void *arg) {
-    int *grade_ptr = (int *) arg; // Cast arg to int pointer
-    int grade = *grade_ptr; // Dereference the pointer to get the grade value
-    free(grade_ptr); // Free dynamically allocated memory
+    int *grade_ptr = (int *) arg;
+    int grade = *grade_ptr;
+    free(grade_ptr);
     grade *= 1.50;
     pthread_mutex_lock(&mutex);
     total_grade += grade;
@@ -45,20 +45,24 @@ void *save_bellcurve(void *arg) {
 int main(void)
 {
     pthread_t threads[NUM_THREADS];
-    pthread_barrier_init(&barrier, NULL, NUM_THREADS);
+    pthread_barrier_init(&barrier, NULL, NUM_THREADS + 1); // +1 for the main thread
     grades_file = fopen("grades.txt", "r");
     bellcurve_file = fopen("bellcurve.txt", "w");
 
     pthread_create(&threads[0], NULL, read_grades, NULL);
+    pthread_barrier_wait(&barrier); // Wait for grades to be read
+
     for (int i = 1; i < NUM_THREADS; i++) {
-        int *grade = (int *)malloc(sizeof(int)); // Dynamically allocate memory
+        int *grade = (int *)malloc(sizeof(int));
         fscanf(grades_file, "%d", grade);
         pthread_create(&threads[i], NULL, save_bellcurve, (void *) grade);
     }
 
-    for (int i = 0; i < NUM_THREADS; i++) {
+    for (int i = 1; i < NUM_THREADS; i++) {
         pthread_join(threads[i], NULL);
     }
+
+    pthread_barrier_destroy(&barrier);
 
     printf("Total grade before bellcurve: %d\n", total_grade);
     printf("Class average before bellcurve: %.2f\n", (float) total_grade / NUM_THREADS);
@@ -66,7 +70,6 @@ int main(void)
     printf("Class average after bellcurve: %.2f\n", (float) total_bellcurve / NUM_THREADS);
 
     fclose(bellcurve_file);
-    pthread_barrier_destroy(&barrier);
     pthread_mutex_destroy(&mutex);
 
     return 0;
