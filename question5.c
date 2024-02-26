@@ -19,7 +19,7 @@ pthread_barrier_t barrier;
 FILE *grades_file;
 FILE *bellcurve_file;
 
-void *read_grades(void *arg) {
+void *read_grades() {
     for (int i = 0; i < NUM_THREADS; i++) {
         int grade;
         fscanf(grades_file, "%d", &grade);
