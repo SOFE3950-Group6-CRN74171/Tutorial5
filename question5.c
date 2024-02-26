@@ -32,6 +32,7 @@ void *save_bellcurve(void *arg) {
     total_bellcurve += grade;
     pthread_mutex_unlock(&mutex);
     fprintf(bellcurve_file, "%d\n", grade);
+    pthread_barrier_wait(&barrier); // Wait for all threads to complete bell-curving
     pthread_exit(NULL);
 }
 
@@ -48,7 +49,8 @@ int main(void)
         pthread_create(&threads[i], NULL, save_bellcurve, (void *) grade);
     }
 
-    pthread_barrier_wait(&barrier); // Wait for all threads to be created before reading grades
+    pthread_barrier_wait(&barrier); // Wait for all threads to start bell-curving
+
     pthread_create(&threads[0], NULL, read_grades, NULL);
     
     for (int i = 0; i < NUM_THREADS; i++) {
