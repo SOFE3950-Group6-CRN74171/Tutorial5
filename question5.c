@@ -30,7 +30,9 @@ void *read_grades() {
 }
 
 void *save_bellcurve(void *arg) {
-    int grade = *((int *) arg);
+    int *grade_ptr = (int *) arg; // Cast arg to int pointer
+    int grade = *grade_ptr; // Dereference the pointer to get the grade value
+    free(grade_ptr); // Free dynamically allocated memory
     grade *= 1.50;
     pthread_mutex_lock(&mutex);
     total_grade += grade;
@@ -49,9 +51,9 @@ int main(void)
 
     pthread_create(&threads[0], NULL, read_grades, NULL);
     for (int i = 1; i < NUM_THREADS; i++) {
-        int grade;
-        fscanf(grades_file, "%d", &grade);
-        pthread_create(&threads[i], NULL, save_bellcurve, (void *) &grade);
+        int *grade = (int *)malloc(sizeof(int)); // Dynamically allocate memory
+        fscanf(grades_file, "%d", grade);
+        pthread_create(&threads[i], NULL, save_bellcurve, (void *) grade);
     }
 
     for (int i = 0; i < NUM_THREADS; i++) {
