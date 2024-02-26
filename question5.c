@@ -1,10 +1,3 @@
-/*
- * Tutorial 5 POSIX Thread Project for SOFE 3950U / CSCI 3020U: Operating Systems
- *
- * Copyright (C) 2024, <Mostafa Abedi, Nathaniel Manoj, Calvin Reveredo>
- * All rights reserved.
- *
-*/
 #define _XOPEN_SOURCE 600
 #include <stdlib.h>
 #include <stdio.h>
@@ -49,16 +42,16 @@ int main(void)
     grades_file = fopen("grades.txt", "r");
     bellcurve_file = fopen("bellcurve.txt", "w");
 
-    pthread_create(&threads[0], NULL, read_grades, NULL);
-    pthread_barrier_wait(&barrier); // Wait for grades to be read
-
-    for (int i = 1; i < NUM_THREADS; i++) {
+    for (int i = 0; i < NUM_THREADS; i++) {
         int *grade = (int *)malloc(sizeof(int));
         fscanf(grades_file, "%d", grade);
         pthread_create(&threads[i], NULL, save_bellcurve, (void *) grade);
     }
 
-    for (int i = 1; i < NUM_THREADS; i++) {
+    pthread_barrier_wait(&barrier); // Wait for all threads to be created before reading grades
+    pthread_create(&threads[0], NULL, read_grades, NULL);
+    
+    for (int i = 0; i < NUM_THREADS; i++) {
         pthread_join(threads[i], NULL);
     }
 
