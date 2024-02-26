@@ -12,7 +12,7 @@
 #include <unistd.h> // for sleep function
 
 // Function to print "Hello, world!"
-void *hello_world(void *arg) {
+void *hello_world() {
     // Generate a random sleep duration between 1 and 3 seconds
     int sleep_duration = rand() % 3 + 1;
     // Sleep for the generated duration
@@ -21,7 +21,7 @@ void *hello_world(void *arg) {
     pthread_exit(NULL);
 }
 // Function to print "Goodbye!"
-void *goodbye(void *arg) {
+void *goodbye() {
     // Generate a random sleep duration between 1 and 3 seconds
     int sleep_duration = rand() % 3 + 1;
     // Sleep for the generated duration
