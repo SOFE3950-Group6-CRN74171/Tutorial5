@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <unistd.h> // For sleep function
 
 #define GRADES_COUNT 10
 #define BELL_CURVE_FACTOR 1.50
@@ -18,7 +19,7 @@ float total_bellcurve = 0;
 pthread_barrier_t barrier;
 pthread_mutex_t mutex;
 
-void* read_grades() {
+void* read_grades(void* arg) {
     FILE* file = fopen("grades.txt", "r");
     if (file == NULL) {
         perror("Error opening file");
@@ -37,6 +38,9 @@ void* read_grades() {
 void* save_bellcurve(void* arg) {
     int* grade = (int*)arg;
     float bellcurved_grade = (*grade) * BELL_CURVE_FACTOR;
+
+    // Simulate some processing time
+    usleep(100000); // 100ms delay
 
     pthread_mutex_lock(&mutex);
     total_grade += *grade;
