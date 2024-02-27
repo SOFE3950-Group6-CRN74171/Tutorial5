@@ -19,7 +19,7 @@ float total_bellcurve = 0;
 pthread_barrier_t barrier;
 pthread_mutex_t mutex;
 
-void* read_grades(void* arg) {
+void* read_grades() {
     FILE* file = fopen("grades.txt", "r");
     if (file == NULL) {
         perror("Error opening file");
